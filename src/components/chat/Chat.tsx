@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ClipboardEvent } from "react";
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle, type ClipboardEvent } from "react";
 import { v4 as uuidv4 } from "uuid";
 import InputBar from "./InputBar";
 import MessageList, { ChatMessage } from "./MessageList";
@@ -17,20 +17,6 @@ type AskResponse = {
   error?: string;
 };
 
-// Frequently Asked Questions
-const FAQ_QUESTIONS = [
-  "Which residences require a meal plan?",
-  "How to submit a maintenance request?",
-  "Is laundry available in residence?",
-  "How do I pay my residence fees?",
-  "What are the quiet hours?",
-  "Are there bike storage rooms?",
-  "What is the SafeWalk program?",
-  "How do I request an accessibility accommodation for housing?",
-  "Can I have a party in my room?",
-  "Can I request a room switch?",
-];
-
 /**
  * ID generator that works in all environments:
  * - Use Web Crypto's randomUUID if it exists (modern browsers).
@@ -44,11 +30,20 @@ function makeId(): string {
   return uuidv4();
 }
 
-export default function Chat({ className = "" }: { className?: string }) {
+export interface ChatRef {
+  ask: (question: string) => void;
+}
+
+const Chat = forwardRef<ChatRef, { className?: string }>(({ className = "" }, ref) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Expose ask function to parent via ref
+  useImperativeHandle(ref, () => ({
+    ask,
+  }));
 
   // 1) Load chat history on mount (using sessionStorage instead of localStorage)
   // This means history clears when browser tab/window closes
@@ -165,33 +160,15 @@ export default function Chat({ className = "" }: { className?: string }) {
     >
       <div className="flex-1 overflow-y-auto p-4 sm:p-6" onCopy={handleCopy}>
         {messages.length === 0 && !loading && (
-          <div className="flex flex-col items-center justify-center h-full space-y-5">
+          <div className="flex flex-col items-center justify-center h-full space-y-4 py-8">
             <div className="text-center space-y-2">
               <div className="text-5xl">💬</div>
               <h2 className="text-xl font-semibold text-slate-200">
                 How can I help you today?
               </h2>
-              <p className="text-xs text-slate-400 max-w-md">
-                Choose a question below or type your own
+              <p className="text-sm text-slate-400 max-w-md px-4">
+                Choose a question from the sidebar or type your own below
               </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-3xl px-4">
-              {FAQ_QUESTIONS.map((question, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => ask(question)}
-                  className="group relative overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] px-3 py-2.5 text-left text-xs text-slate-200 transition-all hover:border-indigo-400/50 hover:bg-white/10 hover:shadow-md hover:shadow-indigo-500/20 hover:scale-[1.02]"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-base shrink-0">💡</span>
-                    <span className="flex-1 font-medium leading-snug">
-                      {question}
-                    </span>
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-purple-500/5 to-pink-500/0 opacity-0 transition-opacity group-hover:opacity-100" />
-                </button>
-              ))}
             </div>
           </div>
         )}
@@ -217,4 +194,8 @@ export default function Chat({ className = "" }: { className?: string }) {
       </div>
     </div>
   );
-}
+});
+
+Chat.displayName = "Chat";
+
+export default Chat;
