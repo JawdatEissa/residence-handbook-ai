@@ -37,7 +37,7 @@ const FAQ_QUESTIONS = [
  * - Fallback to uuid v4 for SSR/older runtimes.
  */
 function makeId(): string {
-  const maybeCrypto: any = typeof crypto !== "undefined" ? crypto : undefined;
+  const maybeCrypto = typeof crypto !== "undefined" ? crypto : undefined;
   if (maybeCrypto && typeof maybeCrypto.randomUUID === "function") {
     return maybeCrypto.randomUUID();
   }
@@ -124,9 +124,11 @@ export default function Chat({ className = "" }: { className?: string }) {
           meta: { cached: data.cached, citations: data.citations },
         },
       ]);
-    } catch (e: any) {
+    } catch (e) {
       const message =
-        typeof e?.message === "string" ? e.message : "Something went wrong.";
+        typeof (e as Error)?.message === "string"
+          ? (e as Error).message
+          : "Something went wrong.";
       setErr(message);
 
       // Append friendly error bubble
@@ -173,7 +175,7 @@ export default function Chat({ className = "" }: { className?: string }) {
                 Choose a question below or type your own
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-3xl px-4">
               {FAQ_QUESTIONS.map((question, idx) => (
                 <button
@@ -193,7 +195,7 @@ export default function Chat({ className = "" }: { className?: string }) {
             </div>
           </div>
         )}
-        
+
         <MessageList messages={messages} />
         {loading && <TypingDots className="mt-2" />}
         <div ref={scrollRef} />

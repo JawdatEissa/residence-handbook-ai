@@ -42,7 +42,7 @@ function hitLimit(ip: string) {
 /**
  * Extract text from an OpenAI Responses API response in a robust way.
  */
-function extractText(resp: any): string {
+function extractText(resp: unknown): string {
   // Newer SDKs provide output_text directly
   const direct = (resp?.output_text ?? "").trim();
   if (direct) return direct;
@@ -110,7 +110,7 @@ async function askOnce(model: string, input: string, maxTokens: number) {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
   
   // gpt-5-nano doesn't support temperature parameter, only gpt-4o and mini do
-  const requestParams: any = {
+  const requestParams: Record<string, unknown> = {
     model,
     input,
     max_output_tokens: maxTokens,
@@ -394,7 +394,7 @@ export async function POST(req: NextRequest) {
         const msg =
           process.env.NODE_ENV === "production"
             ? "AI service unavailable."
-            : (e2 as any)?.message ?? String(e2);
+            : (e2 as Error)?.message ?? String(e2);
         return NextResponse.json({ error: msg }, { status: 503 });
       }
     }
@@ -436,13 +436,13 @@ export async function POST(req: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (err: any) {
+  } catch (err) {
     // Log the full error server-side for debugging.
     console.error('Unhandled /api/ask error:', err);
 
     // In development return the error message to the client to aid debugging.
     if (process.env.NODE_ENV !== 'production') {
-      return NextResponse.json({ error: err?.message ?? String(err) }, { status: 500 });
+      return NextResponse.json({ error: (err as Error)?.message ?? String(err) }, { status: 500 });
     }
 
     // Production: keep error message generic to avoid leaking internals.
