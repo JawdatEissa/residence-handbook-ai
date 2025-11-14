@@ -43,14 +43,18 @@ function hitLimit(ip: string) {
  * Extract text from an OpenAI Responses API response in a robust way.
  */
 function extractText(resp: unknown): string {
+  // Cast to record for safe property access with runtime checks
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const r = resp as any;
+  
   // Newer SDKs provide output_text directly
-  const direct = (resp?.output_text ?? "").trim();
+  const direct = (r?.output_text ?? "").trim();
   if (direct) return direct;
 
   // Fallback over output array content
-  if (Array.isArray(resp?.output)) {
+  if (Array.isArray(r?.output)) {
     const pieces: string[] = [];
-    for (const item of resp.output) {
+    for (const item of r.output) {
       if (Array.isArray(item?.content)) {
         for (const c of item.content) {
           if (typeof c?.text === "string") pieces.push(c.text);
