@@ -3,25 +3,43 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
+    "ingest": "tsx scripts/ingest.ts",
+    "diagnose": "tsx scripts/diagnose.ts",
+    "test-links": "tsx scripts/test-links.ts",
+    "check-cache": "tsx scripts/check-cache.ts",
+    "check-chunks": "tsx scripts/check-chunks.ts",
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.58.0",
+    "ai": "^5.0.59",
+    "next": "15.5.4",
+    "openai": "^5.23.2",
+    "pdf-parse": "^1.1.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "react-markdown": "^10.1.0",
+    "tiktoken": "^1.0.22",
+    "uuid": "^13.0.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "@types/uuid": "^10.0.0",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5"
   }
 }
