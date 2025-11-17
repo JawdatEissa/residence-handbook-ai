@@ -74,7 +74,8 @@ function extractText(resp: unknown): string {
  */
 const SYSTEM_RULES = `
 You are SFU Residence & Housing handbook assistant.
-Answer ONLY using the provided handbook excerpts. If the answer is not present, say you cannot find it in the materials provided. 
+Answer ONLY using the provided handbook excerpts. If the answer is not clearly and directly present in the context, respond with exactly: "I'm here to help with residence and housing questions at SFU. I don't have specific information about that in the residence handbook. Please ask about residence policies, meal plans, maintenance requests, fees, quiet hours, room policies, or residence facilities."
+
 Be concise and precise. Use bullet points when listing items.
 DO NOT include source references or page numbers in your answer - they will be added automatically as citations.
 
@@ -179,7 +180,7 @@ async function trySemanticCache(
 async function retrieveContext(
   qEmbedding: number[],
   maxChunks = 6,
-  minSimilarity = 0.4
+  minSimilarity = 0.35
 ): Promise<{ blocks: string[]; citations: Citation[]; bestSimilarity: number; isRelevant: boolean }> {
   try {
     console.log('[retrieveContext] Calling match_chunks RPC with embedding length:', qEmbedding.length);
@@ -462,7 +463,13 @@ export async function POST(req: NextRequest) {
 
     // Final answer and citations (keep whatever the model returned; we also include retrieved citations)
     const finalAnswer = answerText.trim();
-    const finalCitations = deduplicateCitations(citations);
+    
+    // If the answer is an "out of scope" or "cannot find" type response, don't include citations
+    const isOutOfScope = finalAnswer.toLowerCase().includes("i'm here to help with residence") || 
+                         finalAnswer.toLowerCase().includes("i don't have specific information") ||
+                         finalAnswer.toLowerCase().includes("cannot find it in the materials");
+    
+    const finalCitations = isOutOfScope ? [] : deduplicateCitations(citations);
 
     // Best-effort cache insert using service-role client
     cacheInsert(question, qEmbedding, finalAnswer, finalCitations).catch(() => {});

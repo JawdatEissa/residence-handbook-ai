@@ -17,6 +17,7 @@ const FAQ_QUESTIONS = [
   "How do I request an accessibility accommodation for housing?",
   "Can I have a party in my room?",
   "Can I request a room switch?",
+  "Where to eat on campus?",
 ];
 
 export default function FAQSidebar({ onAskQuestion }: FAQSidebarProps) {
