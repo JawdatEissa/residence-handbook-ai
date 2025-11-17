@@ -180,7 +180,7 @@ async function trySemanticCache(
 async function retrieveContext(
   qEmbedding: number[],
   maxChunks = 6,
-  minSimilarity = 0.35
+  minSimilarity = 0.2
 ): Promise<{ blocks: string[]; citations: Citation[]; bestSimilarity: number; isRelevant: boolean }> {
   try {
     console.log('[retrieveContext] Calling match_chunks RPC with embedding length:', qEmbedding.length);
