@@ -56,14 +56,14 @@ export default function InputBar({
         onKeyDown={handleKeyDown}
         placeholder="Type your question…"
         rows={1}
-        className="min-h-[48px] max-h-40 flex-1 resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-indigo-400/50 focus:border-indigo-400/30 transition-all shadow-inner"
+        className="min-h-[48px] max-h-40 flex-1 resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/30 transition-all shadow-inner"
         aria-label="Message input"
       />
       <button
         type="button"
         onClick={submit}
         disabled={disabled || !value.trim()}
-        className="h-[48px] shrink-0 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 px-6 text-sm font-semibold text-white transition-all hover:from-indigo-400 hover:to-purple-400 hover:shadow-lg hover:shadow-indigo-500/30 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:shadow-none"
+        className="h-[48px] shrink-0 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 text-sm font-semibold text-white transition-all hover:from-emerald-400 hover:to-teal-400 hover:shadow-lg hover:shadow-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:shadow-none"
         aria-label="Send"
       >
         <span className="flex items-center gap-2">

@@ -10,9 +10,9 @@ export default function TypingDots({ className }: Props) {
         className || ""
       }`}
     >
-      <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-indigo-400" />
-      <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-purple-400 [animation-delay:120ms]" />
-      <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-pink-400 [animation-delay:240ms]" />
+      <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-400" />
+      <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-teal-400 [animation-delay:120ms]" />
+      <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-cyan-400 [animation-delay:240ms]" />
     </div>
   );
 }

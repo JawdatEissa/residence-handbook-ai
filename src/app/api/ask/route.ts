@@ -173,11 +173,14 @@ async function trySemanticCache(
  * Try to retrieve context chunks from a sections/embeddings RPC.
  * If your RPC/table is named differently, adapt below.
  * Silently degrades to empty context if RPC is missing.
+ * 
+ * Returns similarity score of best match to detect irrelevant questions.
  */
 async function retrieveContext(
   qEmbedding: number[],
-  maxChunks = 6
-): Promise<{ blocks: string[]; citations: Citation[] }> {
+  maxChunks = 6,
+  minSimilarity = 0.4
+): Promise<{ blocks: string[]; citations: Citation[]; bestSimilarity: number; isRelevant: boolean }> {
   try {
     console.log('[retrieveContext] Calling match_chunks RPC with embedding length:', qEmbedding.length);
     
@@ -188,18 +191,31 @@ async function retrieveContext(
 
     if (error) {
       console.error('[retrieveContext] RPC error:', error);
-      return { blocks: [], citations: [] };
+      return { blocks: [], citations: [], bestSimilarity: 0, isRelevant: false };
     }
 
     if (!Array.isArray(data)) {
       console.warn('[retrieveContext] RPC returned non-array data:', typeof data);
-      return { blocks: [], citations: [] };
+      return { blocks: [], citations: [], bestSimilarity: 0, isRelevant: false };
     }
 
     console.log('[retrieveContext] Retrieved', data.length, 'chunks from match_chunks');
     
     if (data.length === 0) {
       console.warn('[retrieveContext] No matching chunks found - check if chunks table has data and RPC exists');
+      return { blocks: [], citations: [], bestSimilarity: 0, isRelevant: false };
+    }
+
+    // Get best similarity score from first result (highest match)
+    const bestSimilarity = typeof data[0]?.similarity === 'number' ? data[0].similarity : 0;
+    const isRelevant = bestSimilarity >= minSimilarity;
+
+    console.log(`[retrieveContext] Best similarity: ${bestSimilarity.toFixed(3)}, Threshold: ${minSimilarity}, Relevant: ${isRelevant}`);
+
+    // If not relevant, return early without processing chunks
+    if (!isRelevant) {
+      console.log('[retrieveContext] Question deemed irrelevant - similarity too low');
+      return { blocks: [], citations: [], bestSimilarity, isRelevant: false };
     }
 
     // Expect each row to have 'content' and some source metadata (file, page, section)
@@ -217,9 +233,9 @@ async function retrieveContext(
       });
     }
 
-    return { blocks, citations: cites };
+    return { blocks, citations: cites, bestSimilarity, isRelevant: true };
   } catch {
-    return { blocks: [], citations: [] };
+    return { blocks: [], citations: [], bestSimilarity: 0, isRelevant: false };
   }
 }
 
@@ -377,9 +393,28 @@ export async function POST(req: NextRequest) {
     }
 
     // Retrieve context (best-effort; may return empty)
-    const { blocks, citations } = await retrieveContext(qEmbedding, 6);
+    const { blocks, citations, bestSimilarity, isRelevant } = await retrieveContext(qEmbedding, 6);
 
     console.log('[POST /api/ask] Retrieved', blocks.length, 'context blocks for question:', question.slice(0, 100));
+    
+    // If question is not relevant (similarity too low), return custom message without calling OpenAI
+    if (!isRelevant) {
+      const outOfScopeMessage = "I'm here to help with residence and housing questions at SFU. Your question seems to be outside my area of expertise. Please ask about topics like meal plans, maintenance requests, fees, quiet hours, room policies, or residence facilities.";
+      
+      console.log(`[POST /api/ask] Question rejected - similarity ${bestSimilarity.toFixed(3)} below threshold. Returning out-of-scope message.`);
+      
+      // Cache the out-of-scope response to avoid re-checking similar irrelevant questions
+      await cacheInsert(question, qEmbedding, outOfScopeMessage, [], "v2025").catch(() => {});
+      
+      return NextResponse.json(
+        {
+          answer: outOfScopeMessage,
+          citations: [], // No citations for out-of-scope questions
+          cached: false,
+        },
+        { status: 200 }
+      );
+    }
     
     // Build prompt
     const prompt = buildPrompt(question, blocks);

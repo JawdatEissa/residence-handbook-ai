@@ -53,7 +53,7 @@ export default function FAQSidebar({ onAskQuestion }: FAQSidebarProps) {
                   onAskQuestion(question);
                   setIsOpen(false);
                 }}
-                className="w-full group relative overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] px-3 py-2 text-left text-xs text-slate-200 transition-all hover:border-indigo-400/50 hover:bg-white/10 hover:shadow-md hover:shadow-indigo-500/20"
+                  className="w-full group relative overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] px-3 py-2 text-left text-xs text-slate-200 transition-all hover:border-emerald-400/50 hover:bg-white/10 hover:shadow-md hover:shadow-emerald-500/20"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-sm shrink-0">💡</span>
@@ -83,7 +83,7 @@ export default function FAQSidebar({ onAskQuestion }: FAQSidebarProps) {
                 <button
                   key={idx}
                   onClick={() => onAskQuestion(question)}
-                  className="w-full group relative overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] px-3 py-2 text-left text-xs text-slate-200 transition-all hover:border-indigo-400/50 hover:bg-white/10 hover:shadow-md hover:shadow-indigo-500/20 hover:scale-[1.01]"
+                  className="w-full group relative overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] px-3 py-2 text-left text-xs text-slate-200 transition-all hover:border-emerald-400/50 hover:bg-white/10 hover:shadow-md hover:shadow-emerald-500/20 hover:scale-[1.01]"
                 >
                   <div className="flex items-start gap-2">
                     <span className="text-sm shrink-0 mt-0.5">💡</span>
@@ -91,7 +91,7 @@ export default function FAQSidebar({ onAskQuestion }: FAQSidebarProps) {
                       {question}
                     </span>
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-purple-500/5 to-pink-500/0 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-teal-500/5 to-cyan-500/0 opacity-0 transition-opacity group-hover:opacity-100" />
                 </button>
               ))}
             </div>
@@ -108,11 +108,11 @@ export default function FAQSidebar({ onAskQuestion }: FAQSidebarProps) {
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(139, 92, 246, 0.3);
+          background: rgba(52, 211, 153, 0.3);
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(139, 92, 246, 0.5);
+          background: rgba(52, 211, 153, 0.5);
         }
       `}</style>
     </>
