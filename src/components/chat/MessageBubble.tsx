@@ -11,7 +11,7 @@ export default function MessageBubble({ message }: { message: ChatMessage }) {
           // wider on big screens; still not edge-to-edge
           "max-w-[92%] md:max-w-[78%] xl:max-w-[72%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-lg",
           isUser
-            ? "bg-gradient-to-br from-emerald-800 to-teal-900 text-white shadow-emerald-900/30 border border-emerald-700/50"
+            ? "bg-teal-800 text-white shadow-teal-950/40 border border-teal-700/30"
             : message.meta?.error
             ? "bg-rose-900/40 text-rose-100 border border-rose-400/20"
             : "bg-gradient-to-br from-white/10 to-white/5 text-slate-100 border border-white/10 shadow-black/20",
